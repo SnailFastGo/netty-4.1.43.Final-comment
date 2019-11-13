@@ -256,7 +256,11 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
         return doBind(ObjectUtil.checkNotNull(localAddress, "localAddress"));
     }
 
+    /**
+     * 监听指定Host和端口
+     */
     private ChannelFuture doBind(final SocketAddress localAddress) {
+        //初始化并注册Channel
         final ChannelFuture regFuture = initAndRegister();
         final Channel channel = regFuture.channel();
         if (regFuture.cause() != null) {
@@ -295,7 +299,11 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
     final ChannelFuture initAndRegister() {
         Channel channel = null;
         try {
+            //使用ServerBootstrap.channel传入的类通过反射生成Channel实例
+            //NioServerSocketChannel就是对ServerSocketChannel的封装
             channel = channelFactory.newChannel();
+
+            //初始化一些ServerSocketChannel配置，为pipeline添加基本的Handler
             init(channel);
         } catch (Throwable t) {
             if (channel != null) {

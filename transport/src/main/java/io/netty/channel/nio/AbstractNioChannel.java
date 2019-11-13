@@ -372,6 +372,9 @@ public abstract class AbstractNioChannel extends AbstractChannel {
         return loop instanceof NioEventLoop;
     }
 
+    /**
+     * 将ServerSocketChannel注册到EventLoop的Selector上，感兴趣事件为0
+     */
     @Override
     protected void doRegister() throws Exception {
         boolean selected = false;

@@ -69,7 +69,8 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
     private final ServerSocketChannelConfig config;
 
     /**
-     * Create a new instance
+     * Create a new instance，设置非阻塞
+     *
      */
     public NioServerSocketChannel() {
         this(newSocket(DEFAULT_SELECTOR_PROVIDER));
@@ -84,6 +85,9 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
 
     /**
      * Create a new instance using the given {@link ServerSocketChannel}.
+     * NioServerSocketChannel就是对ServerSocketChannel的封装
+     * 每个NioServerSocketChannel都有一个ChannelId，一个Unsafe对象和一个DefaultChannelPipeline
+     * 每个DefaultChannelPipeline都有一个TailContext和HeadContext
      */
     public NioServerSocketChannel(ServerSocketChannel channel) {
         super(null, channel, SelectionKey.OP_ACCEPT);

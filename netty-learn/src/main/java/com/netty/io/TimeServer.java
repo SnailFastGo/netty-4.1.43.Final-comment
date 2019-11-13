@@ -50,6 +50,7 @@ public class TimeServer {
             server.group(bossGroup, workGroup)
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 1024)
+                    //childHandler为新接入连接的业务逻辑处理器
                 .childHandler(new ChildChannelHandler());
             ChannelFuture cf = server.bind(port).sync();
             System.out.println("服务器已启动, 监控端口号为 : " + port);

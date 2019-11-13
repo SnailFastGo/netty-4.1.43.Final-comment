@@ -28,6 +28,11 @@ public final class ThreadPerTaskExecutor implements Executor {
         this.threadFactory = threadFactory;
     }
 
+    /**
+     * 创建一个新线程并启动
+     *
+     * @param command          Runnable实例
+     */
     @Override
     public void execute(Runnable command) {
         threadFactory.newThread(command).start();

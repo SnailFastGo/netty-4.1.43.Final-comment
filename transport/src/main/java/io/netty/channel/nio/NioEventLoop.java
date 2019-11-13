@@ -150,6 +150,12 @@ public final class NioEventLoop extends SingleThreadEventLoop {
         selectStrategy = strategy;
     }
 
+
+
+
+    /**
+     * 创建 MpscQueue，队列长度由io.netty.eventLoop.maxPendingTasks控制，不设置则默认为Integer.MAX_VALUE。最小不会小于16
+     */
     private static Queue<Runnable> newTaskQueue(
             EventLoopTaskQueueFactory queueFactory) {
         if (queueFactory == null) {

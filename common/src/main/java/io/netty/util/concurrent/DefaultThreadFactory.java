@@ -63,6 +63,10 @@ public class DefaultThreadFactory implements ThreadFactory {
         this(toPoolName(poolType), daemon, priority);
     }
 
+    /**
+     *将Class的simple name 第一个字母小写
+     *
+     */
     public static String toPoolName(Class<?> poolType) {
         if (poolType == null) {
             throw new NullPointerException("poolType");
@@ -91,7 +95,7 @@ public class DefaultThreadFactory implements ThreadFactory {
             throw new IllegalArgumentException(
                     "priority: " + priority + " (expected: Thread.MIN_PRIORITY <= priority <= Thread.MAX_PRIORITY)");
         }
-
+        //prefix为线程工厂创建线程时使用的前缀, poolId代表第几个线程工厂
         prefix = poolName + '-' + poolId.incrementAndGet() + '-';
         this.daemon = daemon;
         this.priority = priority;
@@ -103,8 +107,13 @@ public class DefaultThreadFactory implements ThreadFactory {
                 Thread.currentThread().getThreadGroup() : System.getSecurityManager().getThreadGroup());
     }
 
+    /**
+     * Create a new 　Thread instance.
+     * @param r          Runnable实例,　代表需要执行的操作
+     */
     @Override
     public Thread newThread(Runnable r) {
+        //线程名称为线程工厂的prefix+线程的序号,由0开始
         Thread t = newThread(FastThreadLocalRunnable.wrap(r), prefix + nextId.incrementAndGet());
         try {
             if (t.isDaemon() != daemon) {

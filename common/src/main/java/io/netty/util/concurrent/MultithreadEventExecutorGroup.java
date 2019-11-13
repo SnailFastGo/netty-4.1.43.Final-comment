@@ -72,6 +72,7 @@ public abstract class MultithreadEventExecutorGroup extends AbstractEventExecuto
             throw new IllegalArgumentException(String.format("nThreads: %d (expected: > 0)", nThreads));
         }
 
+        //executor就是一个任务执行器,没接收到一个Runnable实例,都会使用DefaultThreadFactory创建一个新线程并启动
         if (executor == null) {
             executor = new ThreadPerTaskExecutor(newDefaultThreadFactory());
         }
@@ -81,6 +82,11 @@ public abstract class MultithreadEventExecutorGroup extends AbstractEventExecuto
         for (int i = 0; i < nThreads; i ++) {
             boolean success = false;
             try {
+                /**
+                 *NioEventLoopGroup.newChild()， 创建NioEventLoopGroup下的所有NioEventLoop
+                 * 每个NioEventLoop共用executor和SelectorProvider，但不会共用selector
+                 * 每个NioEventLoop持有一个线程和两个无界MpscQueue
+                 */
                 children[i] = newChild(executor, args);
                 success = true;
             } catch (Exception e) {
@@ -108,6 +114,7 @@ public abstract class MultithreadEventExecutorGroup extends AbstractEventExecuto
             }
         }
 
+        //创建EventLoop对新接入连接选择器，就是按照数组下标轮流给新接入的连接分配EventLoop
         chooser = chooserFactory.newChooser(children);
 
         final FutureListener<Object> terminationListener = new FutureListener<Object>() {

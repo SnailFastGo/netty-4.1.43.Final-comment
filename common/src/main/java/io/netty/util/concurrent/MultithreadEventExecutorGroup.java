@@ -73,7 +73,7 @@ public abstract class MultithreadEventExecutorGroup extends AbstractEventExecuto
         }
 
         //executor就是一个任务执行器,没接收到一个Runnable实例,都会使用DefaultThreadFactory创建一个新线程并启动
-        if (executor == null) {
+            if (executor == null) {
             executor = new ThreadPerTaskExecutor(newDefaultThreadFactory());
         }
 

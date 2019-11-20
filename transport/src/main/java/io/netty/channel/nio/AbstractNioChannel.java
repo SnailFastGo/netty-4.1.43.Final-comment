@@ -81,6 +81,7 @@ public abstract class AbstractNioChannel extends AbstractChannel {
         this.ch = ch;
         this.readInterestOp = readInterestOp;
         try {
+            //设置为非阻塞
             ch.configureBlocking(false);
         } catch (IOException e) {
             try {
@@ -401,6 +402,11 @@ public abstract class AbstractNioChannel extends AbstractChannel {
     protected void doDeregister() throws Exception {
         eventLoop().cancel(selectionKey());
     }
+
+    /**
+     * 为selectionKey添加readInterestOp事件
+     * @throws Exception
+     */
 
     @Override
     protected void doBeginRead() throws Exception {

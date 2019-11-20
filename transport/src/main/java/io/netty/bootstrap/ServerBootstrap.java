@@ -123,29 +123,38 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
 
     @Override
     void init(Channel channel) {
+        //配置用户自定义的Options
         setChannelOptions(channel, options0().entrySet().toArray(newOptionArray(0)), logger);
+
+        //配置用户自定义的Attr
         setAttributes(channel, attrs0().entrySet().toArray(newAttrArray(0)));
 
         ChannelPipeline p = channel.pipeline();
 
         final EventLoopGroup currentChildGroup = childGroup;
         final ChannelHandler currentChildHandler = childHandler;
+
+        //需要给新连接设置的Options
         final Entry<ChannelOption<?>, Object>[] currentChildOptions =
                 childOptions.entrySet().toArray(newOptionArray(0));
+
+        //需要给新连接设置的attr
         final Entry<AttributeKey<?>, Object>[] currentChildAttrs = childAttrs.entrySet().toArray(newAttrArray(0));
 
         p.addLast(new ChannelInitializer<Channel>() {
             @Override
             public void initChannel(final Channel ch) {
                 final ChannelPipeline pipeline = ch.pipeline();
+                //就是bootstrap的handler
                 ChannelHandler handler = config.handler();
                 if (handler != null) {
                     pipeline.addLast(handler);
                 }
-
                 ch.eventLoop().execute(new Runnable() {
                     @Override
                     public void run() {
+                        //ServerBootstrapAcceptor是 inbound handler
+                        //把自定义的currentChildHandler保存起来
                         pipeline.addLast(new ServerBootstrapAcceptor(
                                 ch, currentChildGroup, currentChildHandler, currentChildOptions, currentChildAttrs));
                     }
@@ -199,11 +208,16 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
         @Override
         @SuppressWarnings("unchecked")
         public void channelRead(ChannelHandlerContext ctx, Object msg) {
+            //接到新连接
             final Channel child = (Channel) msg;
 
+            //把用户自定义的childHandler添加到新连接pipeline中
             child.pipeline().addLast(childHandler);
 
+            //把用户自定义的Options设置到新连接
             setChannelOptions(child, childOptions, logger);
+
+            //把用户自定义的Attr设置到新连接中
             setAttributes(child, childAttrs);
 
             try {

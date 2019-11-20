@@ -270,6 +270,8 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
         if (regFuture.isDone()) {
             // At this point we know that the registration was complete and successful.
             ChannelPromise promise = channel.newPromise();
+
+            //通过HeadContext调用NioServerSocketChannel的bind方法，绑定端口，并传播Active事件
             doBind0(regFuture, channel, localAddress, promise);
             return promise;
         } else {
@@ -316,6 +318,8 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
             return new DefaultChannelPromise(new FailedChannel(), GlobalEventExecutor.INSTANCE).setFailure(t);
         }
 
+        //将ServerSocketChannel注册到BossGroup的一个EventLoop的Selector上面
+        //但是没有触发Active事件，也没有向Selector注册Accept事件
         ChannelFuture regFuture = config().group().register(channel);
         if (regFuture.cause() != null) {
             if (channel.isRegistered()) {

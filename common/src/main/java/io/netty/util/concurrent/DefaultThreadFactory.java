@@ -114,6 +114,7 @@ public class DefaultThreadFactory implements ThreadFactory {
     @Override
     public Thread newThread(Runnable r) {
         //线程名称为线程工厂的prefix+线程的序号,由0开始
+        //创建一个FastThreadLocalThread对象
         Thread t = newThread(FastThreadLocalRunnable.wrap(r), prefix + nextId.incrementAndGet());
         try {
             if (t.isDaemon() != daemon) {

@@ -64,6 +64,8 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
     /**
      * Creates a new instance.
      *
+     * 创建channel id、unsafe对象和pipeline对象
+     *
      * @param parent
      *        the parent of this channel. {@code null} if there's no parent.
      */
@@ -463,6 +465,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
                 return;
             }
 
+            //绑定线程
             AbstractChannel.this.eventLoop = eventLoop;
 
             if (eventLoop.inEventLoop()) {
@@ -494,15 +497,19 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
                     return;
                 }
                 boolean firstRegistration = neverRegistered;
+                //将ServerSocketChannel绑定到selector上
                 doRegister();
                 neverRegistered = false;
                 registered = true;
 
                 // Ensure we call handlerAdded(...) before we actually notify the promise. This is needed as the
                 // user may already fire events through the pipeline in the ChannelFutureListener.
+                //触发一个handler added事件
                 pipeline.invokeHandlerAddedIfNeeded();
 
                 safeSetSuccess(promise);
+
+                //触发一个注册事件
                 pipeline.fireChannelRegistered();
                 // Only fire a channelActive if the channel has never been registered. This prevents firing
                 // multiple channel actives if the channel is deregistered and re-registered.
@@ -832,6 +839,9 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
             });
         }
 
+        /**
+         * 给channel设置一个初始化的感兴趣事件，对应ServerSocketChannel就是Accept事件
+         */
         @Override
         public final void beginRead() {
             assertEventLoop();

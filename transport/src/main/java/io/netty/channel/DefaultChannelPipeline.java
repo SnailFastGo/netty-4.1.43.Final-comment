@@ -1407,8 +1407,10 @@ public class DefaultChannelPipeline implements ChannelPipeline {
 
         @Override
         public void channelActive(ChannelHandlerContext ctx) {
+            //传递Active事件
             ctx.fireChannelActive();
 
+            //最终会调用到doBegin方法，  为selectionKey添加readInterestOp事件
             readIfIsAutoRead();
         }
 
